@@ -203,6 +203,20 @@
   
   <build>
     <finalName>bootstrap</finalName>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat7-maven-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+                  <path>/</path>
+                  <port>8080</port>
+                  <uriEncoding>UTF-8</uriEncoding>
+                  <contextReloadable>true</contextReloadable>
+              </configuration>
+          </plugin>
+      </plugins>
+
   </build>
   <!-- 指定maven编译方式为jdk1.7版本 -->
 	<profiles>
