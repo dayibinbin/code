@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TOperator" >
+	
+	<resultMap type="cn.com.checknull.model.po.TOperator" id="RMTOperator">
+		<result property="id" column="ID" />
+		<result property="gender" column="GENDER" />
+		<result property="loginName" column="LOGIN_NAME" />
+		<result property="password" column="PASSWORD" />
+		<result property="realName" column="REAL_NAME" />
+		<result property="phone" column="PHONE" />
+		<result property="mobile" column="MOBILE" />
+		<result property="fax" column="FAX" />
+		<result property="email" column="EMAIL" />
+		<result property="msn" column="MSN" />
+		<result property="qq" column="QQ" />
+		<result property="errorTimes" column="ERROR_TIMES" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="loginIp" column="LOGIN_IP" />
+		<result property="loginTime" column="LOGIN_TIME" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="status" column="STATUS" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,GENDER,LOGIN_NAME,PASSWORD,REAL_NAME,PHONE,MOBILE,FAX,EMAIL,MSN,QQ,ERROR_TIMES,
+			UPDATE_TIME,LOGIN_IP,LOGIN_TIME,CREATE_TIME,STATUS
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(gender)">
+				AND GENDER=#{gender}
+			</if>
+			<if test="@Ognl@isNotEmpty(loginName)">
+				AND LOGIN_NAME=#{loginName}
+			</if>
+			<if test="@Ognl@isNotEmpty(password)">
+				AND PASSWORD=#{password}
+			</if>
+			<if test="@Ognl@isNotEmpty(realName)">
+				AND REAL_NAME=#{realName}
+			</if>
+			<if test="@Ognl@isNotEmpty(phone)">
+				AND PHONE=#{phone}
+			</if>
+			<if test="@Ognl@isNotEmpty(mobile)">
+				AND MOBILE=#{mobile}
+			</if>
+			<if test="@Ognl@isNotEmpty(fax)">
+				AND FAX=#{fax} 
+			</if>
+			<if test="@Ognl@isNotEmpty(email)">
+				AND EMAIL=#{email} 
+			</if>
+			<if test="@Ognl@isNotEmpty(msn)">
+				AND MSN=#{msn} 
+			</if>
+			<if test="@Ognl@isNotEmpty(qq)">
+				AND QQ=#{qq} 
+			</if>
+			<if test="@Ognl@isNotEmpty(errorTimes)">
+				AND ERROR_TIMES=#{errorTimes} 
+			</if>
+			<if test="@Ognl@isNotEmpty(loginIp)">
+				AND LOGIN_IP=#{loginIp} 
+			</if>
+			<if test="@Ognl@isNotEmpty(status)">
+				AND STATUS=#{status} 
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_operator  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTOperator">
+    	select <include refid="columns" />
+	    from t_operator 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TOperator" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_operator(GENDER,LOGIN_NAME,PASSWORD,REAL_NAME,PHONE,MOBILE,FAX,EMAIL,MSN,
+			QQ,ERROR_TIMES,UPDATE_TIME,LOGIN_IP,LOGIN_TIME,CREATE_TIME,STATUS) 
+					values(#{gender},#{loginName},#{password},#{realName},#{phone},#{mobile}
+					,#{fax},#{email},#{msn},#{qq},#{errorTimes},#{updateTime}
+					,#{loginIp},#{loginTime},#{createTime},#{status})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TOperator">
+		<![CDATA[
+			update t_operator set GENDER=#{gender},LOGIN_NAME=#{loginName},PASSWORD=#{password},REAL_NAME=#{realName}
+			,PHONE=#{phone},MOBILE=#{mobile},FAX=#{fax},EMAIL=#{email},MSN=#{msn}
+			,QQ=#{qq},ERROR_TIMES=#{errorTimes},UPDATE_TIME=#{updateTime},LOGIN_IP=#{loginIp}
+			,LOGIN_TIME=#{loginTime},CREATE_TIME=#{createTime},STATUS=#{status}  
+			where ID=#{id} 
+		]]>
+	</update>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTOperator">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_operator where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByLoginName" parameterType="java.lang.String" resultMap="RMTOperator">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_operator where LOGIN_NAME=#{loginName}
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_operator where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

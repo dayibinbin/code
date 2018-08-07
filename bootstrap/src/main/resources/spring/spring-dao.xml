@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">  
+        <constructor-arg name="alias" value="mysqlproxool" />
+	</bean>
+	
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:cn/com/checknull/model/xml/*.xml"/>
+    </bean>
+  	
+  	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+  		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="tlogLoginDao" class="cn.com.checknull.dao.TLogLoginDao"/>
+	<bean id="tlogOperateDao" class="cn.com.checknull.dao.TLogOperateDao"/>
+	<bean id="toperatorRoleDao" class="cn.com.checknull.dao.TOperatorRoleDao"/>
+	<bean id="tsysconfigDao" class="cn.com.checknull.dao.TSysconfigDao"/>
+	<bean id="tsysmenuDao" class="cn.com.checknull.dao.TSysmenuDao"/>
+	<bean id="tsysprivDao" class="cn.com.checknull.dao.TSysprivDao"/>
+	<bean id="tsysroleMenuDao" class="cn.com.checknull.dao.TSysroleMenuDao"/>
+	<bean id="tsysrolePrivDao" class="cn.com.checknull.dao.TSysrolePrivDao"/>
+	<bean id="tsysroleDao" class="cn.com.checknull.dao.TSysroleDao"/>
+	<bean id="toperatorDao" class="cn.com.checknull.dao.TOperatorDao"/>
+</beans>
+

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TLogOperate" >
+	
+	<resultMap type="cn.com.checknull.model.po.TLogOperate" id="RMTLogOperate">
+		<result property="id" column="ID" />
+		<result property="loginName" column="LOGIN_NAME" />
+		<result property="operatorName" column="OPERATOR_NAME" />
+		<result property="operatorId" column="OPERATOR_ID" />
+		<result property="operateType" column="OPERATE_TYPE" />
+		<result property="operateResult" column="OPERATE_RESULT" />
+		<result property="operateObject" column="OPERATE_OBJECT" />
+		<result property="operateValue" column="OPERATE_VALUE" />
+		<result property="operateTime" column="OPERATE_TIME" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,LOGIN_NAME,OPERATOR_NAME,OPERATOR_ID,OPERATE_TYPE,OPERATE_RESULT,OPERATE_OBJECT,OPERATE_VALUE,OPERATE_TIME 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(loginName)">
+				AND LOGIN_NAME=#{loginName}
+			</if>
+			<if test="@Ognl@isNotEmpty(operatorName)">
+				AND OPERATOR_NAME=#{operatorName}
+			</if>
+			<if test="@Ognl@isNotEmpty(operatorId)">
+				AND OPERATOR_ID=#{operatorId}
+			</if>
+			<if test="@Ognl@isNotEmpty(operateType)">
+				AND OPERATE_TYPE=#{operateType}
+			</if>
+			<if test="@Ognl@isNotEmpty(operateResult)">
+				AND OPERATE_RESULT=#{operateResult}
+			</if>
+			<if test="@Ognl@isNotEmpty(operateObject)">
+				AND OPERATE_OBJECT=#{operateObject}
+			</if>
+			<if test="@Ognl@isNotEmpty(operateValue)">
+				AND OPERATE_VALUE=#{operateValue} 
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_log_operate  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTLogOperate">
+    	select <include refid="columns" />
+	    from t_log_operate 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TLogOperate" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_log_operate(LOGIN_NAME,OPERATOR_NAME,
+						OPERATOR_ID,OPERATE_TYPE,OPERATE_RESULT,
+						OPERATE_OBJECT,OPERATE_VALUE,OPERATE_TIME) 
+					
+					values(#{loginName},#{operatorName},
+					#{operatorId},#{operateType},#{operateResult},
+					#{operateObject},#{operateValue},#{operateTime})
+		]]>
+	</insert>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTLogOperate">
+			select <include refid="columns" />
+		<![CDATA[
+			from t_log_operate where ID=#{id}
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_log_operate where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

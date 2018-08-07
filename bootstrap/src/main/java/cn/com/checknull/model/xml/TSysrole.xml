@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TSysrole" >
+	
+	<resultMap type="cn.com.checknull.model.po.TSysrole" id="RMTSysrole">
+		<result property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="status" column="STATUS" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,NAME,DESCRIPTION,CREATE_TIME,STATUS 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(name)">
+				AND NAME=#{name}
+			</if>
+			<if test="@Ognl@isNotEmpty(description)">
+				AND DESCRIPTION=#{description}
+			</if>
+			<if test="@Ognl@isNotEmpty(status)">
+				AND STATUS=#{status}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_sysrole  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTSysrole">
+    	select <include refid="columns" />
+	    from t_sysrole 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TSysrole" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_sysrole(NAME,DESCRIPTION,CREATE_TIME,STATUS) 
+					values(#{name},#{description},#{createTime},#{status})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TSysrole">
+		<![CDATA[
+			update t_sysrole set NAME=#{name},DESCRIPTION=#{description},CREATE_TIME=#{createTime},STATUS=#{status} 
+			where ID=#{id} 
+		]]>
+	</update>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTSysrole">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByIds" resultMap="RMTSysrole">
+		select <include refid="columns" />
+		from t_sysrole where ID in
+		<foreach item="id" index="index" collection="array" open="(" separator="," close=")">  
+  		#{id}
+ 		</foreach> 
+			order by id asc
+	</select>
+	
+	<select id="findByName" parameterType="java.lang.String" resultMap="RMTSysrole">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole where NAME=#{name}
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_sysrole where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

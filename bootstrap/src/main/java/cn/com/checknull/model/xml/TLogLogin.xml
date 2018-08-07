@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TLogLogin" >
+	
+	<resultMap type="cn.com.checknull.model.po.TLogLogin" id="RMTLogLogin">
+		<result property="id" column="ID" />
+		<result property="loginName" column="LOGIN_NAME" />
+		<result property="operatorName" column="OPERATOR_NAME" />
+		<result property="operatorId" column="OPERATOR_ID" />
+		<result property="type" column="TYPE" />
+		<result property="result" column="RESULT" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="loginIp" column="LOGIN_IP" />
+		<result property="time" column="TIME" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,LOGIN_NAME,OPERATOR_NAME,OPERATOR_ID,TYPE,RESULT,DESCRIPTION,LOGIN_IP,TIME
+	    ]]>
+	</sql>
+	
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(loginName)">
+				AND LOGIN_NAME=#{loginName}
+			</if>
+			<if test="@Ognl@isNotEmpty(operatorName)">
+				AND OPERATOR_NAME=#{operatorName}
+			</if>
+			<if test="@Ognl@isNotEmpty(operatorId)">
+				AND OPERATOR_ID=#{operatorId}
+			</if>
+			<if test="@Ognl@isNotEmpty(type)">
+				AND TYPE=#{type}
+			</if>
+			<if test="@Ognl@isNotEmpty(result)">
+				AND RESULT=#{result}
+			</if>
+			<if test="@Ognl@isNotEmpty(description)">
+				AND DESCRIPTION=#{description}
+			</if>
+			<if test="@Ognl@isNotEmpty(loginIp)">
+				AND LOGIN_IP=#{loginIp} 
+			</if>
+			<if test="@Ognl@isNotEmpty(startTime)">
+				AND TIME&gt;=#{startTime} 
+			</if>
+			<if test="@Ognl@isNotEmpty(endTime)">
+				AND TIME&lt;=#{endTime} 
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_log_login  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTLogLogin">
+    	select <include refid="columns" />
+	    from t_log_login 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TLogLogin" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_log_login(LOGIN_NAME,OPERATOR_NAME,
+						OPERATOR_ID,TYPE,RESULT,
+						DESCRIPTION,LOGIN_IP,TIME) 
+					
+					values(#{loginName},#{operatorName},
+					#{operatorId},#{type},#{result},
+					#{description},#{loginIp},#{time})
+		]]>
+	</insert>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTLogLogin">
+			select <include refid="columns" />
+		<![CDATA[
+			from t_log_login where ID=#{id}
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_log_login where ID=#{id}
+		]]>
+	</delete>
+	
+	<select id="statisticsPV" resultType="java.util.HashMap">
+        select count(LOGIN_NAME) as count, DATE_FORMAT(TIME,'%y/%m/%d') as dayTime from t_log_login   
+		<include refid="findPageWhere"/>    
+		group by dayTime
+    </select>
+    
+    <select id="statisticsUV" resultType="java.util.HashMap">
+        select count(DISTINCT LOGIN_NAME) as count, DATE_FORMAT(TIME,'%y/%m/%d') as dayTime from t_log_login   
+		<include refid="findPageWhere"/>    
+		group by dayTime
+    </select>
+    
+</mapper>

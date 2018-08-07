@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TOperatorRole" >
+	
+	<resultMap type="cn.com.checknull.model.po.TOperatorRole" id="RMTOperatorRole">
+		<result property="id" column="ID" />
+		<result property="operatorId" column="OPERATOR_ID" />
+		<result property="roleIds" column="ROLE_IDS" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,OPERATOR_ID,ROLE_IDS 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(operatorId)">
+				AND OPERATOR_ID=#{operatorId}
+			</if>
+			<if test="@Ognl@isNotEmpty(roleIds)">
+				AND ROLE_IDS=#{roleIds}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_operator_role  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTOperatorRole">
+    	select <include refid="columns" />
+	    from t_operator_role 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TOperatorRole" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_operator_role(OPERATOR_ID,ROLE_IDS) 
+					values(#{operatorId},#{roleIds})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TOperatorRole">
+		<![CDATA[
+			update t_operator_role set OPERATOR_ID=#{operatorId},ROLE_IDS=#{roleIds} 
+			where ID=#{id} 
+		]]>
+	</update>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTOperatorRole">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_operator_role where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByOperatorId" parameterType="java.lang.Long" resultMap="RMTOperatorRole">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_operator_role where OPERATOR_ID=#{operatorId}
+		]]>
+	</select>
+	
+	<select id="findByRoleId" parameterType="java.lang.String" resultMap="RMTOperatorRole">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_operator_role where LOCATE(#{tmpRoleId},CONCAT(',', ROLE_IDS,',')) > 0 
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_operator_role where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

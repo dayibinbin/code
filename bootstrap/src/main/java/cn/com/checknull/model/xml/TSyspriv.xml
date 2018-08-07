@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TSyspriv" >
+	
+	<resultMap type="cn.com.checknull.model.po.TSyspriv" id="RMTSyspriv">
+		<result property="id" column="ID" />
+		<result property="code" column="CODE" />
+		<result property="name" column="NAME" />
+		<result property="iconCls" column="ICON_CLS" />
+		<result property="icon" column="ICON" />
+		<result property="method" column="METHOD" />
+		<result property="menuId" column="MENU_ID" />
+		<result property="sequence" column="SEQUENCE" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="status" column="STATUS" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,CODE,NAME,ICON_CLS,ICON,METHOD,MENU_ID,SEQUENCE,CREATE_TIME,STATUS 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(code)">
+				AND CODE=#{code}
+			</if>
+			<if test="@Ognl@isNotEmpty(name)">
+				AND NAME=#{name}
+			</if>
+			<if test="@Ognl@isNotEmpty(iconCls)">
+				AND ICON_CLS=#{iconCls}
+			</if>
+			<if test="@Ognl@isNotEmpty(icon)">
+				AND ICON=#{icon}
+			</if>
+			<if test="@Ognl@isNotEmpty(method)">
+				AND METHOD=#{method}
+			</if>
+			<if test="@Ognl@isNotEmpty(menuId)">
+				AND MENU_ID=#{menuId}
+			</if>
+			<if test="@Ognl@isNotEmpty(sequence)">
+				AND SEQUENCE=#{sequence}
+			</if>
+			<if test="@Ognl@isNotEmpty(status)">
+				AND STATUS=#{status}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_syspriv  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTSyspriv">
+    	select <include refid="columns" />
+	    from t_syspriv 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TSyspriv" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_syspriv(CODE,NAME,ICON_CLS,ICON,METHOD,MENU_ID,SEQUENCE,CREATE_TIME,STATUS) 
+					values(#{code},#{name},#{iconCls},#{icon},#{method},#{menuId},
+					#{sequence},#{createTime},#{status})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TSyspriv">
+		<![CDATA[
+			update t_syspriv set CODE=#{code},NAME=#{name},ICON_CLS=#{iconCls},ICON=#{icon}
+			,METHOD=#{method},MENU_ID=#{menuId},SEQUENCE=#{sequence},CREATE_TIME=#{createTime}
+			,STATUS=#{status} 
+			where ID=#{id} 
+		]]>
+	</update>
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTSyspriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_syspriv where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByMenuId" parameterType="java.lang.Long" resultMap="RMTSyspriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_syspriv where MENU_ID=#{menuId} order by sequence asc 
+		]]>
+	</select>
+	
+	<select id="findByNameAndMenuId" parameterType="java.util.Map" resultMap="RMTSyspriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_syspriv where NAME=#{name} and MENU_ID=#{menuId}
+		]]>
+	</select>
+	
+	<select id="findByCodeAndMenuId" parameterType="java.util.Map" resultMap="RMTSyspriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_syspriv where CODE=#{code} and MENU_ID=#{menuId}
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_syspriv where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

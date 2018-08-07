@@ -1,0 +1,19 @@
+<ehcache>
+    <diskStore path="java.io.tmpdir/shiro-spring-sample"/>
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            overflowToDisk="false"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            />
+	<!-- 权限缓存策略,30秒后重新获取权限 -->
+    <cache name="cn.com.checknull.shiro.realm.ServiceRealm.authorizationCache"
+           maxElementsInMemory="100"
+           eternal="false"
+           timeToLiveSeconds="30"
+           overflowToDisk="false"/>
+
+</ehcache>

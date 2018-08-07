@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TSysrolePriv" >
+	
+	<resultMap type="cn.com.checknull.model.po.TSysrolePriv" id="RMTSysrolePriv">
+		<result property="id" column="ID" />
+		<result property="roleId" column="ROLE_ID" />
+		<result property="privIds" column="PRIV_IDS" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,ROLE_ID,PRIV_IDS 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(roleId)">
+				AND ROLE_ID=#{roleId}
+			</if>
+			<if test="@Ognl@isNotEmpty(privIds)">
+				AND PRIV_IDS=#{privIds}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_sysrole_priv  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTSysrolePriv">
+    	select <include refid="columns" />
+	    from t_sysrole_priv 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TSysrolePriv" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_sysrole_priv(ROLE_ID,PRIV_IDS) 
+					values(#{roleId},#{privIds})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TSysrolePriv">
+		<![CDATA[
+			update t_sysrole_priv set ROLE_ID=#{roleId},PRIV_IDS=#{privIds} 
+			where ID=#{id} 
+		]]>
+	</update>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTSysrolePriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole_priv where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByRoleId" parameterType="java.lang.Long" resultMap="RMTSysrolePriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole_priv where ROLE_ID=#{roleId}
+		]]>
+	</select>
+	
+	<select id="findByRoleIds" parameterType="java.lang.String" resultMap="RMTSysrolePriv">
+		select <include refid="columns" />
+		from t_sysrole_priv where ROLE_ID in
+		<foreach item="roleId" index="index" collection="array" open="(" separator="," close=")">  
+  		#{roleId}
+ 		</foreach> 
+			order by id asc
+	</select>
+	
+	<select id="findByPrivId" parameterType="java.lang.String" resultMap="RMTSysrolePriv">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole_priv where LOCATE(#{tmpPrivId},CONCAT(',', PRIV_IDS,',')) > 0 
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_sysrole_priv where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

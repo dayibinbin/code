@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<bean id="tlogLoginService" class="cn.com.checknull.service.TLogLoginService"/>
+	<bean id="tlogOperateService" class="cn.com.checknull.service.TLogOperateService"/>
+	<bean id="toperatorRoleService" class="cn.com.checknull.service.TOperatorRoleService"/>
+	<bean id="tsysconfigService" class="cn.com.checknull.service.TSysconfigService"/>
+	<bean id="tsysmenuService" class="cn.com.checknull.service.TSysmenuService"/>
+	<bean id="tsysprivService" class="cn.com.checknull.service.TSysprivService"/>
+	<bean id="tsysroleMenuService" class="cn.com.checknull.service.TSysroleMenuService"/>
+	<bean id="tsysrolePrivService" class="cn.com.checknull.service.TSysrolePrivService"/>
+	<bean id="tsysroleService" class="cn.com.checknull.service.TSysroleService"/>
+	<bean id="toperatorService" class="cn.com.checknull.service.TOperatorService"/>
+	
+</beans>
+

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TSysroleMenu" >
+	
+	<resultMap type="cn.com.checknull.model.po.TSysroleMenu" id="RMTSysroleMenu">
+		<result property="id" column="ID" />
+		<result property="roleId" column="ROLE_ID" />
+		<result property="menuIds" column="MENU_IDS" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,ROLE_ID,MENU_IDS 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(roleId)">
+				AND ROLE_ID=#{roleId}
+			</if>
+			<if test="@Ognl@isNotEmpty(menuIds)">
+				AND MENU_IDS=#{menuIds}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_sysrole_menu  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTSysroleMenu">
+    	select <include refid="columns" />
+	    from t_sysrole_menu 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TSysroleMenu" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_sysrole_menu(ROLE_ID,MENU_IDS) 
+					values(#{roleId},#{menuIds})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TSysroleMenu">
+		<![CDATA[
+			update t_sysrole_menu set ROLE_ID=#{roleId},MENU_IDS=#{menuIds} 
+			where ID=#{id} 
+		]]>
+	</update>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTSysroleMenu">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole_menu where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByRoleId" parameterType="java.lang.Long" resultMap="RMTSysroleMenu">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole_menu where ROLE_ID=#{roleId}
+		]]>
+	</select>
+	
+	<select id="findByRoleIds" resultMap="RMTSysroleMenu">
+		select <include refid="columns" />
+		from t_sysrole_menu where ROLE_ID in
+		<foreach item="roleId" index="index" collection="array" open="(" separator="," close=")">  
+  		#{roleId}
+ 		</foreach> 
+ 			order by id asc
+	</select>
+	
+	<select id="findByMenuId" parameterType="java.lang.String" resultMap="RMTSysroleMenu">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysrole_menu where LOCATE(#{tmpMenuId},CONCAT(',', MENU_IDS,',')) > 0 
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_sysrole_menu where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

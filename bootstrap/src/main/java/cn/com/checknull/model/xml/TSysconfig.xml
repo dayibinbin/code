@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="TSysconfig" >
+	
+	<resultMap type="cn.com.checknull.model.po.TSysconfig" id="RMTSysconfig">
+		<result property="id" column="ID" />
+		<result property="paramName" column="PARAM_NAME" />
+		<result property="paramCode" column="PARAM_CODE" />
+		<result property="paramValue" column="PARAM_VALUE" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="createTime" column="CREATE_TIME" />
+	</resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+			ID,PARAM_NAME,PARAM_CODE,PARAM_VALUE,DESCRIPTION,CREATE_TIME 
+	    ]]>
+	</sql>
+	<sql id="findPageWhere">
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND ID = #{id}
+			</if>
+			<if test="@Ognl@isNotEmpty(paramName)">
+				AND PARAM_NAME=#{paramName}
+			</if>
+			<if test="@Ognl@isNotEmpty(paramCode)">
+				AND PARAM_CODE=#{paramCode}
+			</if>
+			<if test="@Ognl@isNotEmpty(paramValue)">
+				AND PARAM_VALUE=#{paramValue}
+			</if>
+			<if test="@Ognl@isNotEmpty(description)">
+				AND DESCRIPTION=#{description}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findPageCount" resultType="long">
+        select  count(1)  from t_sysconfig  
+		<include refid="findPageWhere"/>    
+    </select>
+    
+    <select id="findPage" resultMap="RMTSysconfig">
+    	select <include refid="columns" />
+	    from t_sysconfig 
+		<include refid="findPageWhere"/>
+		
+		order by ${sort} ${order} 
+		<if test="firstIndex!=-1 and lastIndex!=-1">
+			limit ${firstIndex},${lastIndex}
+		</if>
+    </select>
+    
+	<insert id="save" parameterType="cn.com.checknull.model.po.TSysconfig" 
+		useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insert into t_sysconfig(PARAM_NAME,PARAM_CODE,PARAM_VALUE,DESCRIPTION,CREATE_TIME) 
+					values(#{paramName},#{paramCode},#{paramValue},#{description},#{createTime})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="cn.com.checknull.model.po.TSysconfig">
+		<![CDATA[
+			update t_sysconfig set PARAM_NAME=#{paramName},PARAM_CODE=#{paramCode},PARAM_VALUE=#{paramValue}
+			,DESCRIPTION=#{description},CREATE_TIME=#{createTime}  
+			where ID=#{id} 
+		]]>
+	</update>
+	
+	<select id="findById" parameterType="java.lang.Long" resultMap="RMTSysconfig">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysconfig where ID=#{id}
+		]]>
+	</select>
+	
+	<select id="findByParamCode" parameterType="java.lang.String" resultMap="RMTSysconfig">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysconfig where PARAM_CODE=#{paramCode}
+		]]>
+	</select>
+	
+	<select id="findByParamName" parameterType="java.lang.String" resultMap="RMTSysconfig">
+		select <include refid="columns" />
+		<![CDATA[
+			from t_sysconfig where PARAM_NAME=#{paramName}
+		]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		<![CDATA[
+			delete from t_sysconfig where ID=#{id}
+		]]>
+	</delete>
+	
+</mapper>

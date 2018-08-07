@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.3.xsd"
+	default-lazy-init="false">
+	
+	<context:component-scan base-package="cn.com.checknull">
+		<context:include-filter type="annotation" expression="org.aspectj.lang.annotation.Aspect"/>
+	</context:component-scan>
+	
+	<bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">  
+        <constructor-arg name="alias" value="mysqlproxool" />
+	</bean>
+	
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:cn/com/checknull/model/xml/*.xml"/>
+    </bean>
+  	
+  	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+  		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!-- 定义aspectj -->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	
+	<!-- ======================================================================================================= -->
+	<!-- 									以下是对shiro支持的配置 			                						 -->
+	<!-- ======================================================================================================= -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="serviceRealm"/>
+    </bean>
+	<bean id="serviceRealm" class="cn.com.checknull.shiro.realm.ServiceRealm">
+		<property name="cacheManager" ref="cacheManager"/>
+		<property name="credentialsMatcher" ref="passwordMatcher"/>
+		<property name="authorizationCachingEnabled" value="true"/>
+		
+	</bean>
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
+	</bean>
+	<bean id="passwordMatcher" class="org.apache.shiro.authc.credential.PasswordMatcher">
+		<property name="passwordService" ref="myPasswordService"/>
+	</bean>
+	<bean id="myPasswordService" class="cn.com.checknull.shiro.crypto.MyPasswordService">
+	</bean>
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/login.do"/>
+        <property name="successUrl" value="/index.do"/>
+        <property name="unauthorizedUrl" value="/unauthorized.do"/>
+        <property name="filterChainDefinitions">
+            <value>
+            	/login.do = anon
+            	/redirect.do = anon
+            	/userLogin.do = anon
+            	/unauthorized.do = anon
+            	/static/** = anon
+                /** = authc
+            </value>
+        </property>
+    </bean>
+    <!-- 加入shiro注解的地方再引入spring管理对象时，只能使用注解@Resource(name="xxx") -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor">
+          <property name="proxyTargetClass" value="true" />
+    </bean>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+</beans>
+
